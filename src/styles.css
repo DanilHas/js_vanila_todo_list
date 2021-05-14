@@ -1,0 +1,37 @@
+.todo-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.todo-list__search-field {
+    border-radius: 8px;
+    margin: 5px;
+    padding: 3px;
+    width: 300px;
+}
+
+.todo-list__top-container {
+    padding: 50px;
+}
+
+.todo-list__button {
+    border-radius: 8px;
+    width: 60px;
+    height: 25px;
+    background-color: gainsboro;
+}
+
+.todo-list__task {
+    width: 560px;
+    border-bottom: 2px solid black;
+    margin-top: 15px;
+    
+}
+
+.todo-list__deleteButton {
+    margin-left: 530px;
+    border-radius: 50%;
+    font-size: 9px;
+}
