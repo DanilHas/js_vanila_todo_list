@@ -35,3 +35,13 @@
     border-radius: 50%;
     font-size: 9px;
 }
+
+.todo-list__editButton {
+    width: 30px;
+    height: 20px;
+}
+
+.todo-list__image {
+    width: 30px;
+    height: 20px;
+}
