@@ -60,7 +60,8 @@ button {
 }
 
 .todo-list__input:focus {
-  outline: unset;
+  outline: none;
+  caret-color: green;
 }
 
 .todo-list__checkbox {
@@ -142,4 +143,9 @@ button {
 .todo-list__imageEditButton {
   width: 16.5px;
   height: 17.5px;
+}
+
+.todo-list__image-plus {
+  height: 32px;
+  width: 32px;
 }
