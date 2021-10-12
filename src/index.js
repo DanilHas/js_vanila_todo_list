@@ -95,25 +95,58 @@ addButton.onclick = function () {
 };
 
 document.addEventListener("click", function (event) {
-  const taskContainer = document.querySelector(".todo-list__task-creating-now");
+  const createdTaskContainer = document.querySelector(
+    ".todo-list__task-creating-now"
+  );
+  const editedTaskContainer = document.querySelector(
+    ".todo-list__task-editing-now"
+  );
 
-  if (
-    event.target.className === "todo-list__add-button" ||
-    taskContainer.contains(event.target) ||
-    addButton.contains(event.target)
-  ) {
-    return;
-  }
+  if (createdTaskContainer) {
+    if (
+      event.target.className === "todo-list__add-button" ||
+      createdTaskContainer.contains(event.target) ||
+      addButton.contains(event.target)
+    ) {
+      return;
+    }
 
-  const input = taskContainer.querySelector(".todo-list__input");
+    const input = createdTaskContainer.querySelector(".todo-list__input");
 
-  if (input && !input.value) {
-    taskContainer.remove();
-    return;
-  } else {
-    taskContainer.remove();
-    tasksStore.push(new Task(input.value));
-    renderTasks();
+    if (input && !input.value) {
+      createdTaskContainer.remove();
+      return;
+    } else {
+      createdTaskContainer.remove();
+      tasksStore.push(new Task(input.value));
+      renderTasks();
+    }
+  } else if (editedTaskContainer) {
+    const editInput = editedTaskContainer.querySelector(
+      ".todo-list__editInput"
+    );
+
+    if (
+      event.target.className === "todo-list__task-editing-now" ||
+      editInput.contains(event.target) ||
+      event.target.className === 'todo-list__editButton' ||
+      event.target.className === "todo-list__imageEditButton"
+    ) {
+      return;
+    }
+    if (!editInput.value) {
+      editedTaskContainer.remove();
+      tasksStore = tasksStore.filter(
+        (task) => task.id !== editedTaskContainer.id
+      );
+      return;
+    } else {
+      const currentTask = tasksStore.find(
+        (task) => task.id === editedTaskContainer.id
+      );
+      currentTask.title = editInput.value;
+      renderTasks();
+    }
   }
 });
 
@@ -162,31 +195,34 @@ function renderTasks() {
     };
 
     editButton.addEventListener("click", (event) => {
-      const taskContainer = event.target.closest('.todo-list__task');
-      const taskTitle = taskContainer.querySelector('.todo-list__task-title');
+      const taskContainer = event.target.closest(".todo-list__task");
+      const taskTitle = taskContainer.querySelector(".todo-list__task-title");
       const editInput = document.createElement("input");
       editInput.className = "todo-list__editInput";
       editInput.value = taskTitle.textContent;
+      taskContainer.classList.add("todo-list__task-editing-now");
 
       editInput.addEventListener("keypress", (event) => {
-      if (event.key === "Enter") {
-      const taskContainer = event.target.closest(".todo-list__task");
-      const editInput = taskContainer.querySelector(".todo-list__editInput");
+        if (event.key === "Enter") {
+          const taskContainer = event.target.closest(".todo-list__task");
+          const editInput = taskContainer.querySelector(
+            ".todo-list__editInput"
+          );
 
-      if (!editInput.value) {
-      taskContainer.remove();
-      tasksStore = tasksStore.filter(
-       (task) => task.id !== taskContainer.id
-       );
-       return;
-      } else {
-      const currentTask = tasksStore.find(
-      (task) => task.id === taskContainer.id
-      );
-      currentTask.title = editInput.value;
-      renderTasks();
-      }
-      }
+          if (!editInput.value) {
+            taskContainer.remove();
+            tasksStore = tasksStore.filter(
+              (task) => task.id !== taskContainer.id
+            );
+            return;
+          } else {
+            const currentTask = tasksStore.find(
+              (task) => task.id === taskContainer.id
+            );
+            currentTask.title = editInput.value;
+            renderTasks();
+          }
+        }
       });
 
       taskRightContainer.remove();
