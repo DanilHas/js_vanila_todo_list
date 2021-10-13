@@ -150,6 +150,15 @@ document.addEventListener("click", function (event) {
   }
 });
 
+function createTaskCheckbox(checked) {
+  const checkBox = document.createElement("input");
+    checkBox.setAttribute("type", "checkbox");
+    checkBox.className = "todo-list__checkbox";
+    checkBox.checked = checked;
+    checkBox.addEventListener('click', completeTask);
+    return checkBox;
+}
+
 function renderTasks() {
   const tasksContainer = document.querySelector(".todo-list__tasks-container");
   tasksContainer.innerHTML = "";
@@ -160,13 +169,15 @@ function renderTasks() {
     taskContainer.className = "todo-list__task";
     taskContainer.id = task.id;
 
+    if (task.completed) {
+      taskContainer.classList.add('todo-list__task-completed');
+    }
+
     // Создаем контейнер, который нам нужен для того, чтобы хранить в нем чекбокс, текст и дату
     const taskLeftContainer = document.createElement("div");
     taskLeftContainer.className = "todo-list__task-left-container";
-    // Далее мы должны создать чекбокс, который мы засунем в таск контейнер
-    const checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-    checkBox.className = "todo-list__checkbox";
+    
+    const checkBox = createTaskCheckbox(task.completed);
 
     // Создаем параграф для того, чтобы добавить в него
     // текст который мы только что написали в инпуте
@@ -249,6 +260,18 @@ function renderTasks() {
 
     tasksContainer.prepend(taskContainer);
   });
+}
+
+function completeTask(event) {
+  const checkBox = event.target;
+  const taskContainer = checkBox.closest('.todo-list__task');
+  const taskIdx = tasksStore.findIndex((task) => task.id == taskContainer.id);
+
+  if (taskIdx !== -1) {
+    tasksStore[taskIdx].completed = !tasksStore[taskIdx].completed;
+  }
+  
+  renderTasks();
 }
 
 renderTasks();

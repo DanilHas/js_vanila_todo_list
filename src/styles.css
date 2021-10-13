@@ -149,3 +149,20 @@ button {
   height: 32px;
   width: 32px;
 }
+
+.todo-list__task-completed .todo-list__task-title {
+  opacity: 0.5;
+}
+
+.todo-list__editInput {
+  border: unset;
+  height: 24px;
+  margin-left: 12px;
+  font-size: 18px;
+  font-family: Avenir;
+}
+
+.todo-list__editInput:focus {
+  outline: none;
+  caret-color: green;
+}
