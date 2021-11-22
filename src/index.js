@@ -35,8 +35,22 @@ imagePlus.src = "../js_vanila_todo_list/assets/icons/Plus.svg";
 const topContainer = document.createElement("div");
 topContainer.className = "todo-list__top-container";
 
+const calendarButton = document.createElement("button");
+calendarButton.className = "todo-list__calendar-button";
+calendarButton.textContent = "Filter by date";
+
+const imageCalendarButton = document.createElement("img");
+imageCalendarButton.className = "todo-list__image-calendar-button";
+imageCalendarButton.src =
+  "../js_vanila_todo_list/assets/icons/CalendarIcon.svg";
+
+const leftTopContainer = document.createElement("div");
+leftTopContainer.className = "todo-list__left-top-container";
+
 addButton.append(imagePlus);
-topContainer.append(title, addButton);
+calendarButton.prepend(imageCalendarButton);
+leftTopContainer.append(title, calendarButton);
+topContainer.append(leftTopContainer, addButton);
 mainContainer.append(topContainer, tasksContainer);
 document.body.append(mainContainer);
 
@@ -54,7 +68,7 @@ addButton.onclick = function () {
   taskLeftContainer.className = "todo-list__task-left-container";
   // Далее мы должны создать чекбокс, который мы засунем в таск контейнер
   const checkBox = document.createElement("input");
-  checkBox.setAttribute("type", "checkbox");
+  checkBox.setAttribute("type", "radio");
   checkBox.className = "todo-list__checkbox";
 
   // Далее мы создаем инпут в котором мы будем писать название таски
@@ -129,7 +143,7 @@ document.addEventListener("click", function (event) {
     if (
       event.target.className === "todo-list__task-editing-now" ||
       editInput.contains(event.target) ||
-      event.target.className === 'todo-list__editButton' ||
+      event.target.className === "todo-list__editButton" ||
       event.target.className === "todo-list__imageEditButton"
     ) {
       return;
@@ -152,11 +166,11 @@ document.addEventListener("click", function (event) {
 
 function createTaskCheckbox(checked) {
   const checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-    checkBox.className = "todo-list__checkbox";
-    checkBox.checked = checked;
-    checkBox.addEventListener('click', completeTask);
-    return checkBox;
+  checkBox.setAttribute("type", "radio");
+  checkBox.className = "todo-list__checkbox";
+  checkBox.checked = checked;
+  checkBox.addEventListener("click", completeTask);
+  return checkBox;
 }
 
 function renderTasks() {
@@ -170,13 +184,13 @@ function renderTasks() {
     taskContainer.id = task.id;
 
     if (task.completed) {
-      taskContainer.classList.add('todo-list__task-completed');
+      taskContainer.classList.add("todo-list__task-completed");
     }
 
     // Создаем контейнер, который нам нужен для того, чтобы хранить в нем чекбокс, текст и дату
     const taskLeftContainer = document.createElement("div");
     taskLeftContainer.className = "todo-list__task-left-container";
-    
+
     const checkBox = createTaskCheckbox(task.completed);
 
     // Создаем параграф для того, чтобы добавить в него
@@ -264,17 +278,115 @@ function renderTasks() {
 
 function completeTask(event) {
   const checkBox = event.target;
-  const taskContainer = checkBox.closest('.todo-list__task');
+  const taskContainer = checkBox.closest(".todo-list__task");
   const taskIdx = tasksStore.findIndex((task) => task.id == taskContainer.id);
 
   if (taskIdx !== -1) {
     tasksStore[taskIdx].completed = !tasksStore[taskIdx].completed;
   }
-  
+
   renderTasks();
 }
 
 renderTasks();
+
+function createCalendar() {
+  const calendarContainer = document.createElement("div");
+  calendarContainer.className = "todo-list__calendar-container";
+  const calendarDateContainer = document.createElement('div');
+  const monthNow = document.createElement("p");
+  monthNow.textContent = "November";
+  const yearNow = document.createElement("p");
+  yearNow.textContent = "2021";
+  const prevMonth = document.createElement("button");
+  prevMonth.textContent = "<";
+  const nextMonth = document.createElement("button");
+  nextMonth.textContent = ">";
+
+  const calendar = document.createElement("table");
+  calendar.className = "todo-list__calendar";
+  const calendarTopContainer = document.createElement("thead");
+  const daysString = document.createElement("tr");
+  const monday = document.createElement("th");
+  monday.textContent = "Mo";
+  const tuesday = document.createElement("th");
+  tuesday.textContent = "Tu";
+  const wednesday = document.createElement("th");
+  wednesday.textContent = "We";
+  const thursday = document.createElement("th");
+  thursday.textContent = "Th";
+  const friday = document.createElement("th");
+  friday.textContent = "Fr";
+  const saturday = document.createElement("th");
+  saturday.textContent = "Sa";
+  const sunday = document.createElement("th");
+  sunday.textContent = "Su";
+
+  const calendarFootContainer = document.createElement("tfoot");
+  const applyButton = document.createElement("button");
+  applyButton.textContent = "Apply";
+
+  const calendarBody = document.createElement("tbody");
+
+  daysString.append(
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    sunday
+  );
+  calendarTopContainer.append(daysString);
+  calendarFootContainer.append(applyButton);
+  calendar.append(calendarTopContainer, calendarFootContainer, calendarBody);
+  calendarDateContainer.append(monthNow, yearNow, prevMonth, nextMonth);
+  calendarContainer.append(calendarDateContainer, calendar);
+  mainContainer.append(calendarContainer);
+
+  function renderCalendar() {
+
+  const nowDate = new Date();
+  const nowMonth = nowDate.getMonth();
+  const nowYear = nowDate.getFullYear();
+  const lastDate = new Date(nowYear, nowMonth + 1, 0).getDate();
+  const currentDate = new Date(nowYear, nowMonth);
+
+  while (currentDate.getMonth() == nowMonth) {
+    const calendarDaysString = document.createElement("tr");
+    for (let i = 0; i < 7; i++) {
+      const days = document.createElement("td");
+      if (calendarDaysString == 0) {
+        if (i < getDayOfTheWeek(currentDate)) {
+          days.innerHTML = "";
+        } else {
+          days.innerHTML = currentDate.getDate();
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      } else { 
+      if (currentDate.getDate() == lastDate) {
+        days.innerHTML = currentDate.getDate();
+          currentDate.setDate(currentDate.getDate() + 1);
+          break;
+        } 
+        days.innerHTML = currentDate.getDate();
+        currentDate.setDate(currentDate.getDate() + 1);
+        }
+      calendarDaysString.append(days);
+    }
+    calendarBody.append(calendarDaysString);  
+  }
+
+  function getDayOfTheWeek(date) {
+    let day = date.getDay();
+    if (day == 0) day = 7;
+    return day - 1;
+  }
+}
+renderCalendar();
+}
+
+calendarButton.addEventListener("click", createCalendar);
 
 // 1. Создать правый контейнер
 // 2. Создать две кнопки и засунуть в них картинки с иконками (и добавить стили)

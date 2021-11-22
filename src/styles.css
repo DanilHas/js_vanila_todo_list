@@ -15,6 +15,7 @@
   box-shadow: 0px 16px 64px rgba(159, 168, 175, 0.1);
   border-radius: 56px;
   margin: 56px auto;
+  position: relative;
 }
 
 .todo-list__top-container {
@@ -24,7 +25,8 @@
   width: 100%;
 }
 
-html, body {
+html,
+body {
   background-color: #e5e5e5;
   display: flex;
   justify-content: center;
@@ -64,11 +66,20 @@ button {
   caret-color: green;
 }
 
-.todo-list__checkbox {
+input[type="radio"] {
+  appearance: none;
+  background-color: white;
+  background-clip: content-box;
+  border-radius: 50%;
   width: 16px;
   height: 16px;
-  margin-left: 4px;
+  padding: 3px;
   border: 2px solid #505460;
+}
+
+input[type="radio"]:checked {
+  background-color: #a1b834;
+  border: 2px solid #a1b834;
 }
 
 .todo-list__editButton {
@@ -93,6 +104,7 @@ button {
   top: 104px;
   font-family: Avenir;
   font-weight: 900;
+  font-size: 45px;
   line-height: 66px;
   text-align: center;
   color: #505460;
@@ -165,4 +177,54 @@ button {
 .todo-list__editInput:focus {
   outline: none;
   caret-color: green;
+}
+
+.todo-list__calendar-button {
+  width: 170px;
+  height: 40px;
+  left: 270px;
+  top: 194px;
+  border-radius: 16px;
+  border: 1px solid #ebebeb;
+  padding: 8px 16px;
+  margin-bottom: 34px;
+  font-family: Avenir;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #505460;
+}
+
+.todo-list__image-calendar-button {
+  width: 17.92px;
+  height: 17.27px;
+  top: 3.25px;
+  left: 3.04px;
+  margin-right: 7.04px;
+}
+
+.todo-list__calendar-container {
+  position: absolute;
+  width: 470px;
+  height: 331px;
+  left: 40px;
+  top: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #ebebeb;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 32px rgba(170, 170, 170, 0.03);
+  border-radius: 28px;
+}
+
+.todo-list__calendar {
+  width: 470px;
+  height: 331px;
+  position: relative;
+  left: 45px;
 }
