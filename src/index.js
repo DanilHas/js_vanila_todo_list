@@ -291,13 +291,35 @@ function completeTask(event) {
 renderTasks();
 
 function createCalendar() {
+  const createWeek = () =>
+    Array.from(new Array(7), () => document.createElement("td"));
+  const createRow = () => document.createElement("tr");
+
+  const createTableBody = (year, month) =>
+    [...Array(new Date(year, month + 1, 0).getDate()).keys()].reduce(
+      (acc, element) => {
+        const day = element + 1;
+        const weekDay = new Date(year, month, day).getDay();
+        const dayRemap = [6, 0, 1, 2, 3, 4, 5];
+        if (day === 1 || weekDay === 1) {
+          const row = createRow();
+          const week = createWeek();
+          row.append(...week);
+          acc.push(row);
+        }
+        acc[acc.length - 1].children[dayRemap[weekDay]].textContent = day;
+        return acc;
+      },
+      []
+    );
+
   const calendarContainer = document.createElement("div");
   calendarContainer.className = "todo-list__calendar-container";
-  const calendarDateContainer = document.createElement('div');
+  const calendarDateContainer = document.createElement("div");
   const monthNow = document.createElement("p");
-  monthNow.textContent = "November";
+  monthNow.textContent = new Date().toLocaleString('eng', {month: "long"});
   const yearNow = document.createElement("p");
-  yearNow.textContent = "2021";
+  yearNow.textContent = new Date().getFullYear();
   const prevMonth = document.createElement("button");
   prevMonth.textContent = "<";
   const nextMonth = document.createElement("button");
@@ -328,6 +350,12 @@ function createCalendar() {
 
   const calendarBody = document.createElement("tbody");
 
+  const nowDate = new Date();
+  const nowYear = nowDate.getFullYear();
+  const nowMonth = nowDate.getMonth();
+
+  calendarBody.append(...createTableBody(nowYear, nowMonth));
+
   daysString.append(
     monday,
     tuesday,
@@ -343,51 +371,9 @@ function createCalendar() {
   calendarDateContainer.append(monthNow, yearNow, prevMonth, nextMonth);
   calendarContainer.append(calendarDateContainer, calendar);
   mainContainer.append(calendarContainer);
-
-  function renderCalendar() {
-
-  const nowDate = new Date();
-  const nowMonth = nowDate.getMonth();
-  const nowYear = nowDate.getFullYear();
-  const lastDate = new Date(nowYear, nowMonth + 1, 0).getDate();
-  const currentDate = new Date(nowYear, nowMonth);
-
-  while (currentDate.getMonth() == nowMonth) {
-    const calendarDaysString = document.createElement("tr");
-    for (let i = 0; i < 7; i++) {
-      const days = document.createElement("td");
-      if (calendarDaysString == 0) {
-        if (i < getDayOfTheWeek(currentDate)) {
-          days.innerHTML = "";
-        } else {
-          days.innerHTML = currentDate.getDate();
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-      } else { 
-      if (currentDate.getDate() == lastDate) {
-        days.innerHTML = currentDate.getDate();
-          currentDate.setDate(currentDate.getDate() + 1);
-          break;
-        } 
-        days.innerHTML = currentDate.getDate();
-        currentDate.setDate(currentDate.getDate() + 1);
-        }
-      calendarDaysString.append(days);
-    }
-    calendarBody.append(calendarDaysString);  
-  }
-
-  function getDayOfTheWeek(date) {
-    let day = date.getDay();
-    if (day == 0) day = 7;
-    return day - 1;
-  }
-}
-renderCalendar();
 }
 
 calendarButton.addEventListener("click", createCalendar);
-
 // 1. Создать правый контейнер
 // 2. Создать две кнопки и засунуть в них картинки с иконками (и добавить стили)
 // 3. поместить эти кнопки в правый контейнер
