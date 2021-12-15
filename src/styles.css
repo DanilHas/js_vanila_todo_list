@@ -30,7 +30,7 @@ body {
   background-color: #e5e5e5;
   display: flex;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   color: #505460;
 }
@@ -207,24 +207,92 @@ input[type="radio"]:checked {
 .todo-list__calendar-container {
   position: absolute;
   width: 470px;
-  height: 331px;
+  height: 351px;
   left: 40px;
   top: 170px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  padding: 32px;
   background: #ffffff;
   border: 1px solid #ebebeb;
   box-sizing: border-box;
   box-shadow: 0px 4px 32px rgba(170, 170, 170, 0.03);
   border-radius: 28px;
+  justify-content: space-between;
 }
 
 .todo-list__calendar {
-  width: 470px;
-  height: 331px;
-  position: relative;
-  left: 45px;
+  width: 468px;
+  table-layout: fixed;
+  height: 100%;
+}
+
+tbody td {
+  text-align: center;
+  height: 25px;
+  font-family: Avenir;
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(80, 84, 96, 0.8);
+}
+
+.todo-list__calendar-head-container {
+  width: 100%;
+  padding: 22px 22px 5px;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+}
+
+.todo-list__calendar-month-label,
+.todo-list__calendar-year-label {
+  height: 33px;
+  font-family: Avenir;
+  font-weight: 800;
+  font-size: 24px;
+  color: #505460;
+  line-height: 33px;
+  font-style: normal;
+}
+
+.todo-list__calendar-month-label {
+  margin-right: 8px;
+}
+
+.todo-list__prev-month-button {
+  margin-right: 35.5px;
+}
+
+.todo-list__calendar-apply-button {
+  width: 81px;
+  height: 40px;
+  border-radius: 16px;
+  background: #a1b834;
+  font-family: Avenir;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #ffffff;
+  margin: 0px 15px 10px 357px;
+}
+
+th {
+  height: 25px;
+  font-family: Avenir;
+  font-weight: 800;
+  font-size: 18px;
+  font-style: normal;
+  color: #505460;
+}
+
+.todo-list__calendar-date-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.todo-list__month-switch-container {
+  padding: 11.75px;
 }

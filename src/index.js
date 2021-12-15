@@ -290,44 +290,60 @@ function completeTask(event) {
 
 renderTasks();
 
-function createCalendar() {
-  const createWeek = () =>
-    Array.from(new Array(7), () => document.createElement("td"));
-  const createRow = () => document.createElement("tr");
+const calendarStore = {
+  now: new Date(),
+  offset: 0,
+};
 
-  const createTableBody = (year, month) =>
-    [...Array(new Date(year, month + 1, 0).getDate()).keys()].reduce(
-      (acc, element) => {
-        const day = element + 1;
-        const weekDay = new Date(year, month, day).getDay();
-        const dayRemap = [6, 0, 1, 2, 3, 4, 5];
-        if (day === 1 || weekDay === 1) {
-          const row = createRow();
-          const week = createWeek();
-          row.append(...week);
-          acc.push(row);
-        }
-        acc[acc.length - 1].children[dayRemap[weekDay]].textContent = day;
-        return acc;
-      },
-      []
-    );
+const createWeek = () =>
+  Array.from(new Array(7), () => document.createElement("td"));
+const createRow = () => document.createElement("tr");
 
+const createTableBody = (year, month) =>
+  [...Array(new Date(year, month + 1, 0).getDate()).keys()].reduce(
+    (acc, element) => {
+      const day = element + 1;
+      const weekDay = new Date(year, month, day).getDay();
+      const dayRemap = [6, 0, 1, 2, 3, 4, 5];
+      if (day === 1 || weekDay === 1) {
+        const row = createRow();
+        const week = createWeek();
+        row.append(...week);
+        acc.push(row);
+      }
+      acc[acc.length - 1].children[dayRemap[weekDay]].textContent = day;
+      return acc;
+    },
+    []
+  );
+
+const createCalendarLayout = () => {
   const calendarContainer = document.createElement("div");
   calendarContainer.className = "todo-list__calendar-container";
-  const calendarDateContainer = document.createElement("div");
-  const monthNow = document.createElement("p");
-  monthNow.textContent = new Date().toLocaleString('eng', {month: "long"});
-  const yearNow = document.createElement("p");
-  yearNow.textContent = new Date().getFullYear();
+
+  const calendarHeadContainer = document.createElement("div");
+  calendarHeadContainer.className = "todo-list__calendar-head-container";
+
   const prevMonth = document.createElement("button");
-  prevMonth.textContent = "<";
+  prevMonth.className = "todo-list__prev-month-button";
+  const prevMonthArrowImage = document.createElement("img");
+  prevMonthArrowImage.src =
+    "../js_vanila_todo_list/assets/icons/prevMonthArrow.svg";
+
   const nextMonth = document.createElement("button");
-  nextMonth.textContent = ">";
+  nextMonth.className = "todo-list__next-month-button";
+  const nextMonthArrowImage = document.createElement("img");
+  nextMonthArrowImage.src =
+    "../js_vanila_todo_list/assets/icons/nextMonthArrow.svg";
+
+  const monthSwitchContainer = document.createElement("div");
+  monthSwitchContainer.className = "todo-list__month-switch-container";
 
   const calendar = document.createElement("table");
   calendar.className = "todo-list__calendar";
+
   const calendarTopContainer = document.createElement("thead");
+
   const daysString = document.createElement("tr");
   const monday = document.createElement("th");
   monday.textContent = "Mo";
@@ -347,15 +363,59 @@ function createCalendar() {
   const calendarFootContainer = document.createElement("tfoot");
   const applyButton = document.createElement("button");
   applyButton.textContent = "Apply";
+  applyButton.className = "todo-list__calendar-apply-button";
 
   const calendarBody = document.createElement("tbody");
+  calendarBody.className = "todo-list__calendar-body";
 
-  const nowDate = new Date();
-  const nowYear = nowDate.getFullYear();
-  const nowMonth = nowDate.getMonth();
+  nextMonth.addEventListener("click", () => {
+    calendarBody.innerHTML = "";
+    calendarStore.offset += 1;
+    calendarBody.append(
+      ...createTableBody(
+        calendarStore.now.getFullYear(),
+        calendarStore.now.getMonth() + calendarStore.offset
+      )
+    );
+    monthNow = document.querySelector(".todo-list__calendar-month-label");
+    yearNow = document.querySelector(".todo-list__calendar-year-label");
+    monthNow.remove();
+    yearNow.remove();
+    const nowDate = new Date();
+    nowDate.setMonth(nowDate.getMonth() + calendarStore.offset);
+    changeCalendarLabel(
+      nowDate.getFullYear(),
+      nowDate.toLocaleString("eng", { month: "long" })
+    );
+  });
 
-  calendarBody.append(...createTableBody(nowYear, nowMonth));
+  prevMonth.addEventListener("click", () => {
+    calendarBody.innerHTML = "";
+    calendarStore.offset -= 1;
+    calendarBody.append(
+      ...createTableBody(
+        calendarStore.now.getFullYear(),
+        calendarStore.now.getMonth() + calendarStore.offset
+      )
+    );
+    monthNow = document.querySelector(".todo-list__calendar-month-label");
+    yearNow = document.querySelector(".todo-list__calendar-year-label");
+    monthNow.remove();
+    yearNow.remove();
+    const nowDate = new Date();
+    nowDate.setMonth(nowDate.getMonth() + calendarStore.offset);
+    changeCalendarLabel(
+      nowDate.getFullYear(),
+      nowDate.toLocaleString("eng", { month: "long" })
+    );
+  });
 
+  calendarBody.append(
+    ...createTableBody(
+      calendarStore.now.getFullYear(),
+      calendarStore.now.getMonth()
+    )
+  );
   daysString.append(
     monday,
     tuesday,
@@ -368,12 +428,45 @@ function createCalendar() {
   calendarTopContainer.append(daysString);
   calendarFootContainer.append(applyButton);
   calendar.append(calendarTopContainer, calendarFootContainer, calendarBody);
-  calendarDateContainer.append(monthNow, yearNow, prevMonth, nextMonth);
-  calendarContainer.append(calendarDateContainer, calendar);
+  prevMonth.append(prevMonthArrowImage);
+  nextMonth.append(nextMonthArrowImage);
+  monthSwitchContainer.append(prevMonth, nextMonth);
+  calendarHeadContainer.append(monthSwitchContainer);
+  calendarContainer.append(calendarHeadContainer, calendar);
   mainContainer.append(calendarContainer);
-}
+};
 
-calendarButton.addEventListener("click", createCalendar);
+const changeCalendarLabel = (year, month) => {
+  const monthNow = document.createElement("p");
+  monthNow.textContent = month;
+  monthNow.className = "todo-list__calendar-month-label";
+  const yearNow = document.createElement("p");
+  yearNow.textContent = year;
+  yearNow.className = "todo-list__calendar-year-label";
+
+  const calendarDateConteiner = document.createElement("div");
+  calendarDateConteiner.className = "todo-list__calendar-date-container";
+
+  const calendarHeadContainer = document.querySelector(
+    ".todo-list__calendar-head-container"
+  );
+  calendarDateConteiner.append(monthNow, yearNow);
+  calendarHeadContainer.prepend(calendarDateConteiner);
+};
+
+calendarButton.addEventListener("click", () => {
+  createTableBody(
+    calendarStore.now.getFullYear(),
+    calendarStore.now.getMonth()
+  );
+  createCalendarLayout();
+  changeCalendarLabel(
+    calendarStore.now.getFullYear(),
+    calendarStore.now.toLocaleString("eng", { month: "long" })
+  );
+  createFilterByDate();
+});
+
 // 1. Создать правый контейнер
 // 2. Создать две кнопки и засунуть в них картинки с иконками (и добавить стили)
 // 3. поместить эти кнопки в правый контейнер
