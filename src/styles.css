@@ -180,7 +180,7 @@ input[type="radio"]:checked {
 }
 
 .todo-list__calendar-button {
-  width: 170px;
+  width: auto;
   height: 40px;
   left: 270px;
   top: 194px;
@@ -194,6 +194,8 @@ input[type="radio"]:checked {
   font-size: 18px;
   line-height: 24px;
   color: #505460;
+  display: flex;
+  flex-direction: row;
 }
 
 .todo-list__image-calendar-button {
@@ -226,6 +228,7 @@ input[type="radio"]:checked {
   width: 468px;
   table-layout: fixed;
   height: 100%;
+  border-collapse: collapse;
 }
 
 tbody td {
@@ -295,4 +298,15 @@ th {
 
 .todo-list__month-switch-container {
   padding: 11.75px;
+}
+
+.todo-list__filter-start-date, .todo-list__filter-end-date {
+  height: 26px;
+  background: #A1B84D;
+  color: #FFFFFF;
+  border-radius: 100%;
+}
+
+.todo-list__range-cells {
+  background: rgba(161, 184, 77, 0.2);
 }
