@@ -16,6 +16,8 @@
   border-radius: 56px;
   margin: 56px auto;
   position: relative;
+  min-height: 545px;
+  height: max-content;
 }
 
 .todo-list__top-container {
@@ -44,7 +46,6 @@ button {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 400px;
 }
 
 .todo-list__task {
@@ -58,7 +59,12 @@ button {
 .todo-list__input {
   border: unset;
   height: 24px;
-  margin-left: 12px;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #505460;
 }
 
 .todo-list__input:focus {
@@ -98,17 +104,15 @@ input[type="radio"]:checked {
 }
 
 .todo-list__title {
-  width: 207px;
-  height: 66px;
-  left: 270px;
-  top: 104px;
-  font-family: Avenir;
-  font-weight: 900;
+  display: flex;
+  justify-content: flex-start;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 800;
   font-size: 45px;
   line-height: 66px;
   text-align: center;
   color: #505460;
-  font-style: normal;
 }
 
 .todo-list__deleteButton {
@@ -128,38 +132,21 @@ input[type="radio"]:checked {
   height: 16px;
   color: #505460;
   opacity: 0.5;
-  font-family: Avenir;
+  font-family: Montserrat;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 500;
   font-size: 10px;
   line-height: 16px;
   top: 24px;
 }
 
 .todo-list__task-title {
-  width: auto;
-  height: 24px;
-  font-family: Avenir;
+  font-family: Montserrat;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 500;
   font-size: 18px;
   line-height: 24px;
   color: #505460;
-}
-
-.todo-list__imageDeleteButton {
-  width: 15.5px;
-  height: 20.24px;
-}
-
-.todo-list__imageEditButton {
-  width: 16.5px;
-  height: 17.5px;
-}
-
-.todo-list__image-plus {
-  height: 32px;
-  width: 32px;
 }
 
 .todo-list__task-completed .todo-list__task-title {
@@ -169,9 +156,10 @@ input[type="radio"]:checked {
 .todo-list__editInput {
   border: unset;
   height: 24px;
-  margin-left: 12px;
   font-size: 18px;
-  font-family: Avenir;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 500;
 }
 
 .todo-list__editInput:focus {
@@ -180,36 +168,16 @@ input[type="radio"]:checked {
 }
 
 .todo-list__calendar-button {
-  width: auto;
-  height: 40px;
-  left: 270px;
-  top: 194px;
-  border-radius: 16px;
-  border: 1px solid #ebebeb;
-  padding: 8px 16px;
-  margin-bottom: 34px;
-  font-family: Avenir;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 24px;
-  color: #505460;
   display: flex;
   flex-direction: row;
-}
-
-.todo-list__image-calendar-button {
-  width: 17.92px;
-  height: 17.27px;
-  top: 3.25px;
-  left: 3.04px;
-  margin-right: 7.04px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 1px solid #ebebeb;
+  margin-bottom: 34px;
 }
 
 .todo-list__calendar-container {
   position: absolute;
-  width: 470px;
-  height: 351px;
   left: 40px;
   top: 170px;
   display: flex;
@@ -222,28 +190,29 @@ input[type="radio"]:checked {
   box-shadow: 0px 4px 32px rgba(170, 170, 170, 0.03);
   border-radius: 28px;
   justify-content: space-between;
+  padding: 24px;
 }
 
 .todo-list__calendar {
-  width: 468px;
-  table-layout: fixed;
   height: 100%;
   border-collapse: collapse;
 }
 
 tbody td {
   text-align: center;
-  height: 25px;
-  font-family: Avenir;
+  height: 43px;
+  width: 43px;
+  font-family: Montserrat;
   font-style: normal;
+  font-weight: 600;
   font-size: 18px;
-  font-weight: 500;
   color: rgba(80, 84, 96, 0.8);
 }
 
 .todo-list__calendar-head-container {
   width: 100%;
-  padding: 22px 22px 5px;
+  margin-bottom: 16px;
+  padding-left: 8px;
   flex-direction: row;
   display: flex;
   justify-content: space-between;
@@ -251,13 +220,12 @@ tbody td {
 
 .todo-list__calendar-month-label,
 .todo-list__calendar-year-label {
-  height: 33px;
-  font-family: Avenir;
-  font-weight: 800;
+  font-family: Montserrat;
+  font-weight: 700;
+  font-style: normal;
   font-size: 24px;
   color: #505460;
   line-height: 33px;
-  font-style: normal;
 }
 
 .todo-list__calendar-month-label {
@@ -265,7 +233,14 @@ tbody td {
 }
 
 .todo-list__prev-month-button {
-  margin-right: 35.5px;
+  margin: 0px 16px;
+  width: 24px;
+  height: 24px;
+}
+
+.todo-list__next-month-button {
+  width: 24px;
+  height: 24px;
 }
 
 .todo-list__calendar-apply-button {
@@ -273,40 +248,83 @@ tbody td {
   height: 40px;
   border-radius: 16px;
   background: #a1b834;
-  font-family: Avenir;
+  font-family: Montserrat;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 18px;
   line-height: 24px;
   color: #ffffff;
-  margin: 0px 15px 10px 357px;
 }
 
 th {
-  height: 25px;
-  font-family: Avenir;
-  font-weight: 800;
-  font-size: 18px;
+  font-family: Montserrat;
+  font-weight: 700;
   font-style: normal;
+  font-size: 18px;
   color: #505460;
 }
 
 .todo-list__calendar-date-container {
   display: flex;
-  flex-direction: row;
+  align-items: center;
 }
 
-.todo-list__month-switch-container {
-  padding: 11.75px;
-}
-
-.todo-list__filter-start-date, .todo-list__filter-end-date {
-  height: 26px;
-  background: #A1B84D;
-  color: #FFFFFF;
+.todo-list__filter-start-date,
+.todo-list__filter-end-date {
+  background: #a1b84d;
+  color: #ffffff;
   border-radius: 100%;
+  position: relative;
+}
+
+.todo-list__filter-start-date::before {
+  content: "";
+  background: rgba(161, 184, 77, 0.2);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+}
+
+.todo-list__filter-end-date::before {
+  content: "";
+  background: rgba(161, 184, 77, 0.2);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
 }
 
 .todo-list__range-cells {
   background: rgba(161, 184, 77, 0.2);
+}
+
+.todo-list__filter-date {
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #505460;
+  opacity: 0.5;
+}
+
+.todo-list__delete-filter-button {
+  margin-left: 16px;
+}
+
+.todo-list__calendar-button-text {
+  margin: 0px 4px;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: #505460;
 }

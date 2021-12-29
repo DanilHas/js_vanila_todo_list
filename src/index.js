@@ -3,17 +3,18 @@ class Task {
     this.id = Math.random().toString(36).slice(2);
     this.title = title;
     this.completed = false;
+    this.date = new Date().toLocaleDateString();
   }
 }
 
-let tasksStore = [
-  // {
-  //   id: 'some id',
-  //   title: 'here is some title',
-  //   completed: false,
-  // },
-  new Task("some task 2"),
-];
+let tasksStore = [];
+
+const filter = {
+  start: null,
+  end: null,
+};
+
+let filterArr = [];
 
 const mainContainer = document.createElement("main");
 mainContainer.className = "todo-list";
@@ -37,7 +38,10 @@ topContainer.className = "todo-list__top-container";
 
 const calendarButton = document.createElement("button");
 calendarButton.className = "todo-list__calendar-button";
-calendarButton.textContent = "Filter by date";
+
+const calendarButtonText = document.createElement("p");
+calendarButtonText.textContent = "Filter by date";
+calendarButtonText.className = "todo-list__calendar-button-text";
 
 const filterDate = document.createElement("p");
 filterDate.className = "todo-list__filter-date";
@@ -52,13 +56,17 @@ leftTopContainer.className = "todo-list__left-top-container";
 
 addButton.append(imagePlus);
 calendarButton.prepend(imageCalendarButton);
-calendarButton.append(filterDate);
+calendarButton.append(calendarButtonText, filterDate);
 leftTopContainer.append(title, calendarButton);
 topContainer.append(leftTopContainer, addButton);
 mainContainer.append(topContainer, tasksContainer);
 document.body.append(mainContainer);
 
+
+let isActive = true;
+
 addButton.onclick = function () {
+  if (isActive) {
   // Мы должны создать таск контейнер для того, чтобы
   // хранить в нем дургие элементы (инпут, чекбокс, текст, кнопки)
   const task = document.createElement("div");
@@ -95,21 +103,24 @@ addButton.onclick = function () {
       } else {
         taskContainer.remove();
         tasksStore.push(new Task(input.value));
-        renderTasks();
+        renderTasks(tasksStore);
+        isActive = true;
       }
     }
   });
 
   // Добавляем элементы в контейнер с эелментами слева
-  taskLeftContainer.append(checkBox, tasksInput);
+  taskLeftContainer.append(tasksInput);
 
-  task.append(taskLeftContainer);
+  task.append(checkBox, taskLeftContainer);
 
   // Добавляем контейнер с элементами слева в контейнер
   tasksContainer.prepend(task);
 
   // Вызываем метод фокус, чтобы курсор появился в инпуте, который мы только что добавили
   tasksInput.focus();
+  isActive = false;
+}
 };
 
 document.addEventListener("click", function (event) {
@@ -137,7 +148,8 @@ document.addEventListener("click", function (event) {
     } else {
       createdTaskContainer.remove();
       tasksStore.push(new Task(input.value));
-      renderTasks();
+      renderTasks(tasksStore);
+      isActive = true;
     }
   } else if (editedTaskContainer) {
     const editInput = editedTaskContainer.querySelector(
@@ -163,7 +175,31 @@ document.addEventListener("click", function (event) {
         (task) => task.id === editedTaskContainer.id
       );
       currentTask.title = editInput.value;
-      renderTasks();
+      renderTasks(tasksStore);
+    }
+  }
+
+  const calendarContainer = document.querySelector(
+    ".todo-list__calendar-container"
+  );
+  const calendarButton = document.querySelector(".todo-list__calendar-button");
+  if (calendarContainer) {
+    if (
+      calendarButton.contains(event.target) ||
+      calendarContainer.contains(event.target) ||
+      event.target.tagName === "TD"
+    )
+      return;
+    else {
+      calendarContainer.remove();
+      filter.start = null;
+      filter.end = null;
+      const filterDate = document.querySelector(".todo-list__filter-date");
+      filterDate.innerHTML = "";
+      const calendarButtonText = document.querySelector(
+        ".todo-list__calendar-button-text"
+      );
+      calendarButtonText.textContent = "Filter by date";
     }
   }
 });
@@ -177,11 +213,11 @@ function createTaskCheckbox(checked) {
   return checkBox;
 }
 
-function renderTasks() {
+function renderTasks(arr) {
   const tasksContainer = document.querySelector(".todo-list__tasks-container");
   tasksContainer.innerHTML = "";
 
-  tasksStore.forEach((task) => {
+  arr.forEach((task) => {
     // создаем конейнер для таски
     const taskContainer = document.createElement("div");
     taskContainer.className = "todo-list__task";
@@ -206,7 +242,7 @@ function renderTasks() {
     // Создаем элемент который будет хранить дату создания/обновления нашей таски
     const taskUpdatingDate = document.createElement("p");
     taskUpdatingDate.className = "todo-list__task-updating-date";
-    taskUpdatingDate.textContent = new Date().toLocaleDateString();
+    taskUpdatingDate.textContent = task.date;
 
     const taskRightContainer = document.createElement("div");
     taskRightContainer.className = "todo-list__task-right-container";
@@ -220,7 +256,8 @@ function renderTasks() {
     deleteButton.onclick = (event) => {
       const taskContainer = event.target.closest(".todo-list__task");
       tasksStore = tasksStore.filter((task) => task.id !== taskContainer.id);
-      renderTasks();
+      saveInLocalStorage();
+      renderTasks(tasksStore);
     };
 
     editButton.addEventListener("click", (event) => {
@@ -249,7 +286,8 @@ function renderTasks() {
               (task) => task.id === taskContainer.id
             );
             currentTask.title = editInput.value;
-            renderTasks();
+            saveInLocalStorage();
+            renderTasks(tasksStore);
           }
         }
       });
@@ -275,8 +313,9 @@ function renderTasks() {
     taskRightContainer.append(editButton, deleteButton);
     taskLeftContainer.append(taskTitle, taskUpdatingDate);
     taskContainer.append(checkBox, taskLeftContainer, taskRightContainer);
-
     tasksContainer.prepend(taskContainer);
+
+    saveInLocalStorage();
   });
 }
 
@@ -289,26 +328,30 @@ function completeTask(event) {
     tasksStore[taskIdx].completed = !tasksStore[taskIdx].completed;
   }
 
-  renderTasks();
+  renderTasks(tasksStore);
 }
 
-renderTasks();
+function saveInLocalStorage() {
+  localStorage.setItem("tasksStore", JSON.stringify(tasksStore));
+}
+
+function readFromLocalStorage() {
+  tasksStore = JSON.parse(localStorage.getItem("tasksStore")) || [];
+}
+
+readFromLocalStorage();
+renderTasks(tasksStore);
 
 const calendarStore = {
   now: new Date(),
   offset: 0,
 };
 
-const filter = {
-  start: null,
-  end: null,
-};
-
 const createWeek = () =>
   Array.from(new Array(7), () => document.createElement("td"));
 const createRow = () => document.createElement("tr");
 
-const createCalendarDates = (year, month) => 
+const createCalendarDates = (year, month) =>
   [...Array(new Date(year, month + 1, 0).getDate()).keys()].reduce(
     (acc, element) => {
       const day = element + 1;
@@ -322,20 +365,19 @@ const createCalendarDates = (year, month) =>
       }
       acc[acc.length - 1].children[dayRemap[weekDay]].textContent = day;
 
-      const rangeCell =  acc[acc.length - 1].children[dayRemap[weekDay]];
+      const rangeCell = acc[acc.length - 1].children[dayRemap[weekDay]];
       const rangeDate = new Date(year, month, day);
       if (filter.start < rangeDate && filter.end > rangeDate) {
-        rangeCell.classList.add('todo-list__range-cells');
+        rangeCell.classList.add("todo-list__range-cells");
       }
 
-      const calendarBody = document.querySelector('.todo-list__calendar-body');
+      const calendarBody = document.querySelector(".todo-list__calendar-body");
       if (calendarBody && filter.start !== null) {
-
-      if (filter.start.getDate().toString() === rangeCell.textContent)
-    rangeCell.className = 'todo-list__filter-start-date'
- else if (filter.end.getDate().toString() === rangeCell.textContent)
-    rangeCell.className = 'todo-list__filter-end-date';
-      };
+        if (filter.start.getDate().toString() === rangeCell.textContent)
+          rangeCell.className = "todo-list__filter-start-date";
+        else if (filter.end.getDate().toString() === rangeCell.textContent)
+          rangeCell.className = "todo-list__filter-end-date";
+      }
       return acc;
     },
     []
@@ -384,7 +426,8 @@ const createCalendarLayout = () => {
   const sunday = document.createElement("th");
   sunday.textContent = "Su";
 
-  const calendarFootContainer = document.createElement("tfoot");
+  // const calendarFootContainer = document.createElement("div");
+  // calendarFootContainer.className = "todo-list__calendar-foot-container";
   const applyButton = document.createElement("button");
   applyButton.textContent = "Apply";
   applyButton.className = "todo-list__calendar-apply-button";
@@ -395,6 +438,8 @@ const createCalendarLayout = () => {
   nextMonth.addEventListener("click", () => {
     filter.start = null;
     filter.end = null;
+    const filterDate = document.querySelector(".todo-list__filter-date");
+    filterDate.textContent = "";
     calendarBody.innerHTML = "";
     calendarStore.offset += 1;
     calendarBody.append(
@@ -418,6 +463,8 @@ const createCalendarLayout = () => {
   prevMonth.addEventListener("click", () => {
     filter.start = null;
     filter.end = null;
+    const filterDate = document.querySelector(".todo-list__filter-date");
+    filterDate.textContent = "";
     calendarBody.innerHTML = "";
     calendarStore.offset -= 1;
     calendarBody.append(
@@ -454,13 +501,13 @@ const createCalendarLayout = () => {
     sunday
   );
   calendarTopContainer.append(daysString);
-  calendarFootContainer.append(applyButton);
-  calendar.append(calendarTopContainer, calendarFootContainer, calendarBody);
+  // calendarFootContainer.append(applyButton);
+  calendar.append(calendarTopContainer, calendarBody);
   prevMonth.append(prevMonthArrowImage);
   nextMonth.append(nextMonthArrowImage);
   monthSwitchContainer.append(prevMonth, nextMonth);
   calendarHeadContainer.append(monthSwitchContainer);
-  calendarContainer.append(calendarHeadContainer, calendar);
+  calendarContainer.append(calendarHeadContainer, calendar, applyButton);
   mainContainer.append(calendarContainer);
 };
 
@@ -482,43 +529,22 @@ const changeCalendarLabel = (year, month) => {
   calendarHeadContainer.prepend(calendarDateConteiner);
 };
 
-const createFilterByDate = () => {
+const createCalendarDateRange = () => {
   const calendarBody = document.querySelector(".todo-list__calendar-body");
-  // const currentYear = document.querySelector(".todo-list__calendar-year-label");
-  // const currentMonth = document.querySelector(
-  //   ".todo-list__calendar-month-label"
-  // );
-  // const months = [
-  //   "January",
-  //   "February",
-  //   "March",
-  //   "April",
-  //   "May",
-  //   "June",
-  //   "July",
-  //   "August",
-  //   "September",
-  //   "October",
-  //   "November",
-  //   "December",
-  // ];
-  // const monthIndex = months.findIndex(
-  //   (item) => item === currentMonth.textContent
-  // );
 
   calendarBody.addEventListener("click", (event) => {
     const target = event.target;
-    if (target.tagName !== "TD") return;
+    if (target.tagName !== "TD" || target.textContent === "") return;
 
     if (!filter.start) {
       filter.start = new Date(
         calendarStore.now.getFullYear(),
-      calendarStore.now.getMonth() + calendarStore.offset,
+        calendarStore.now.getMonth() + calendarStore.offset,
         parseInt(target.textContent)
       );
       filter.end = new Date(
         calendarStore.now.getFullYear(),
-      calendarStore.now.getMonth() + calendarStore.offset,
+        calendarStore.now.getMonth() + calendarStore.offset,
         parseInt(target.textContent) + 1,
         0,
         0 - 1
@@ -531,37 +557,116 @@ const createFilterByDate = () => {
     ) {
       filter.end = new Date(
         calendarStore.now.getFullYear(),
-      calendarStore.now.getMonth() + calendarStore.offset,
+        calendarStore.now.getMonth() + calendarStore.offset,
         parseInt(target.textContent)
       );
-      }
+    }
 
-      calendarBody.innerHTML = '';
-      calendarBody.append(...createCalendarDates(calendarStore.now.getFullYear(),
-      calendarStore.now.getMonth() + calendarStore.offset));
+    calendarBody.innerHTML = "";
+    calendarBody.append(
+      ...createCalendarDates(
+        calendarStore.now.getFullYear(),
+        calendarStore.now.getMonth() + calendarStore.offset
+      )
+    );
 
-    // const myDateArr = new Date(
-    //   currentYear.textContent,
-    //   monthIndex,
-    //   target.textContent
-    // ).toLocaleDateString();
-
-    // const calendarButton = document.querySelector(
-    //   ".todo-list__calendar-button"
-    // );
-    // const filterDate = calendarButton.querySelector(".todo-list__filter-date");
-
-    // filterDate.textContent = `: ${myDateArr}`;
+    if (
+      filter.start.getFullYear() === filter.end.getFullYear() &&
+      filter.start.getMonth() === filter.end.getMonth() &&
+      filter.start.getDate() === filter.end.getDate()
+    ) {
+      calendarButtonText.textContent = "Filter by date:";
+      filterDate.textContent = `${filter.start.toLocaleDateString()}`;
+    } else {
+      calendarButtonText.textContent = "Filter by date:";
+      filterDate.textContent = `${filter.start.toLocaleDateString()} - ${filter.end.toLocaleDateString()}`;
+    }
   });
 };
 
-calendarButton.addEventListener("click", () => {
-  createCalendarLayout();
-  changeCalendarLabel(
-    calendarStore.now.getFullYear(),
-    calendarStore.now.toLocaleString("eng", { month: "long" })
+const createFilterByDdate = () => {
+  const applyButton = document.querySelector(
+    ".todo-list__calendar-apply-button"
   );
-  createFilterByDate();
+  applyButton.addEventListener("click", () => {
+    const calendarContainer = document.querySelector(
+      ".todo-list__calendar-container"
+    );
+    if (filter.start === null) calendarContainer.remove();
+    else
+      filterArr = tasksStore.filter(
+        (task) =>
+          filter.start.toLocaleDateString() <= task.date &&
+          filter.end.toLocaleDateString() >= task.date
+      );
+    renderTasks(filterArr);
+    calendarContainer.remove();
+
+    if (filter.start !== null) {
+      const deleteFilterButton = document.createElement("button");
+      deleteFilterButton.className = "todo-list__delete-filter-button";
+
+      const calendarButton = document.querySelector(
+        ".todo-list__calendar-button"
+      );
+      const imageDeleteFilterButton = document.createElement("img");
+      imageDeleteFilterButton.src =
+        "../js_vanila_todo_list/assets/icons/Cross.svg";
+      imageDeleteFilterButton.className =
+        "todo-list__image-delete-filter-button";
+
+      deleteFilterButton.append(imageDeleteFilterButton);
+      calendarButton.append(deleteFilterButton);
+
+      deleteFilterByDate();
+    }
+  });
+};
+
+const deleteFilterByDate = () => {
+  const deleteFilterButton = document.querySelector(
+    ".todo-list__delete-filter-button"
+  );
+  const filterDate = document.querySelector(".todo-list__filter-date");
+  deleteFilterButton.addEventListener("click", () => {
+    filter.start = null;
+    filter.end = null;
+    renderTasks(tasksStore);
+    deleteFilterButton.remove();
+    filterDate.innerHTML = "";
+    const calendarButtonText = document.querySelector(
+      ".todo-list__calendar-button-text"
+    );
+    calendarButtonText.textContent = "Filter by date";
+  });
+};
+
+let isCalendarContainerShow = false;
+calendarButton.addEventListener("click", () => {
+  const calendarContainer = document.querySelector(
+    ".todo-list__calendar-container"
+  );
+  if (isCalendarContainerShow && calendarContainer) {
+    calendarContainer.remove();
+    filter.start = null;
+    filter.end = null;
+    const filterDate = document.querySelector(".todo-list__filter-date");
+    filterDate.innerHTML = "";
+    const calendarButtonText = document.querySelector(
+      ".todo-list__calendar-button-text"
+    );
+    calendarButtonText.textContent = "Filter by date";
+    isCalendarContainerShow = false;
+  } else {
+    createCalendarLayout();
+    changeCalendarLabel(
+      calendarStore.now.getFullYear(),
+      calendarStore.now.toLocaleString("eng", { month: "long" })
+    );
+    createCalendarDateRange();
+    createFilterByDdate();
+    isCalendarContainerShow = true;
+  }
 });
 
 // 1. Создать правый контейнер
