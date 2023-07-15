@@ -67,29 +67,19 @@ let isActive = true;
 
 addButton.onclick = function () {
   if (isActive) {
-  // Мы должны создать таск контейнер для того, чтобы
-  // хранить в нем дургие элементы (инпут, чекбокс, текст, кнопки)
   const task = document.createElement("div");
-  // Вешаем на таск контейнер классы - один обычный для стилей - "todo-list__task"
-  // и второй класс для того, чтобы понять что данный контейнер
-  // у нас находится в работе (т.е. мы его создаем) - "todo-list__task-creating"
   task.className = "todo-list__task todo-list__task-creating-now";
 
-  // Создаем контейнер, который нам нужен для того, чтобы хранить в нем чекбокс, инпут/текст и дату
   const taskLeftContainer = document.createElement("div");
   taskLeftContainer.className = "todo-list__task-left-container";
-  // Далее мы должны создать чекбокс, который мы засунем в таск контейнер
+
   const checkBox = document.createElement("input");
   checkBox.setAttribute("type", "radio");
   checkBox.className = "todo-list__checkbox";
 
-  // Далее мы создаем инпут в котором мы будем писать название таски
   const tasksInput = document.createElement("input");
   tasksInput.className = "todo-list__input";
 
-  // TODO:
-  // Нужно переделать так, чтобы при нажатии кнопки enter в инпуте
-  // у нас создавалась таска
   tasksInput.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
       const taskContainer = document.querySelector(
@@ -109,15 +99,12 @@ addButton.onclick = function () {
     }
   });
 
-  // Добавляем элементы в контейнер с эелментами слева
   taskLeftContainer.append(tasksInput);
 
   task.append(checkBox, taskLeftContainer);
 
-  // Добавляем контейнер с элементами слева в контейнер
   tasksContainer.prepend(task);
 
-  // Вызываем метод фокус, чтобы курсор появился в инпуте, который мы только что добавили
   tasksInput.focus();
   isActive = false;
 }
@@ -218,7 +205,6 @@ function renderTasks(arr) {
   tasksContainer.innerHTML = "";
 
   arr.forEach((task) => {
-    // создаем конейнер для таски
     const taskContainer = document.createElement("div");
     taskContainer.className = "todo-list__task";
     taskContainer.id = task.id;
@@ -226,20 +212,15 @@ function renderTasks(arr) {
     if (task.completed) {
       taskContainer.classList.add("todo-list__task-completed");
     }
-
-    // Создаем контейнер, который нам нужен для того, чтобы хранить в нем чекбокс, текст и дату
     const taskLeftContainer = document.createElement("div");
     taskLeftContainer.className = "todo-list__task-left-container";
 
     const checkBox = createTaskCheckbox(task.completed);
 
-    // Создаем параграф для того, чтобы добавить в него
-    // текст который мы только что написали в инпуте
     const taskTitle = document.createElement("p");
     taskTitle.className = "todo-list__task-title";
     taskTitle.textContent = task.title;
 
-    // Создаем элемент который будет хранить дату создания/обновления нашей таски
     const taskUpdatingDate = document.createElement("p");
     taskUpdatingDate.className = "todo-list__task-updating-date";
     taskUpdatingDate.textContent = task.date;
@@ -426,8 +407,6 @@ const createCalendarLayout = () => {
   const sunday = document.createElement("th");
   sunday.textContent = "Su";
 
-  // const calendarFootContainer = document.createElement("div");
-  // calendarFootContainer.className = "todo-list__calendar-foot-container";
   const applyButton = document.createElement("button");
   applyButton.textContent = "Apply";
   applyButton.className = "todo-list__calendar-apply-button";
@@ -501,7 +480,6 @@ const createCalendarLayout = () => {
     sunday
   );
   calendarTopContainer.append(daysString);
-  // calendarFootContainer.append(applyButton);
   calendar.append(calendarTopContainer, calendarBody);
   prevMonth.append(prevMonthArrowImage);
   nextMonth.append(nextMonthArrowImage);
@@ -668,11 +646,3 @@ calendarButton.addEventListener("click", () => {
     isCalendarContainerShow = true;
   }
 });
-
-// 1. Создать правый контейнер
-// 2. Создать две кнопки и засунуть в них картинки с иконками (и добавить стили)
-// 3. поместить эти кнопки в правый контейнер
-// 4. Добавить правый конейнер в taskContainer
-// 5. Сделать стили так, чтобы соответствовало дизайнам
-// 6. Реализовать функционал по удалению таски
-// 7. Реализовать функционал по редактированию таски (хард левел)
